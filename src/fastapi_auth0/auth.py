@@ -47,3 +47,30 @@ class Auth0HTTPBearer(HTTPBearer):
     async def __call__(self, request: Request):
         return await super().__call__(request)
 
+class OAuth2ImplicitBearer(OAuth2):
+    def __init__(self,
+            authorizationUrl: str,
+            scopes: Dict[str, str]={},
+            scheme_name: Optional[str]=None,
+            auto_error: bool=True):
+        flows = OAuthFlows(implicit=OAuthFlowImplicit(authorizationUrl=authorizationUrl, scopes=scopes))
+        super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
+
+    async def __call__(self, request: Request) -> Optional[str]:
+        # Overwrite parent call to prevent useless overhead, the actual auth is done in Auth0.get_user
+        # This scheme is just for Swagger UI
+        return None
+
+
+class JwksKeyDict(TypedDict):
+    kid: str
+    kty: str
+    use: str
+    n: str
+    e: str
+
+class JwksDict(TypedDict):
+    keys: List[JwksKeyDict]
+
+
+
