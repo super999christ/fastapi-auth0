@@ -50,9 +50,10 @@ class Auth0HTTPBearer(HTTPBearer):
 class OAuth2ImplicitBearer(OAuth2):
     def __init__(self,
             authorizationUrl: str,
-            scopes: Dict[str, str]={},
+            scopes: Optional[Dict[str, str]]=None,
             scheme_name: Optional[str]=None,
             auto_error: bool=True):
+        scopes = {} if scopes is None else scopes
         flows = OAuthFlows(implicit=OAuthFlowImplicit(authorizationUrl=authorizationUrl, scopes=scopes))
         super().__init__(flows=flows, scheme_name=scheme_name, auto_error=auto_error)
 
@@ -75,9 +76,10 @@ class JwksDict(TypedDict):
 
 
 class Auth0:
-    def __init__(self, domain: str, api_audience: str, scopes: Dict[str, str]={},
+    def __init__(self, domain: str, api_audience: str, scopes: Optional[Dict[str, str]]=None,
             auto_error: bool=True, scope_auto_error: bool=True, email_auto_error: bool=False,
             auth0user_model: Type[Auth0User]=Auth0User):
+        scopes = {} if scopes is None else scopes
         self.domain = domain
         self.audience = api_audience
 
